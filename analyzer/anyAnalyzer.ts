@@ -11,12 +11,15 @@ import { TypeAnalyzer } from "./type/TypeAnalyzer";
 
     console.log("Search complete.");
     console.log(`  Found ${queryName} in ${response.details.length} files.`);
+
     for (const details of response.details) {
+        console.log(`    ${details.filePath}`);
+
         if (!details.success) {
-            console.log(`Erorr processing file: ${details.error}`);
+            console.log(`      - Erorr processing file: ${details.error}`);
             continue;
         }
-        console.log(`    ${details.filePath}`);
+        
         for (const anyReference of details.anyReferences) {
             console.log(`      - ${anyReference}`);
         }

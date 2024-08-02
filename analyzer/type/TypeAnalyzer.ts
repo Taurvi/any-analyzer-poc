@@ -7,6 +7,7 @@ import { createSourceFile, forEachChild, Node, ScriptTarget, SyntaxKind } from "
 export type AnlyzerFileResult =
     | {
           success: false;
+          filePath: string;
           error: unknown;
       }
     | {
@@ -44,18 +45,12 @@ export class TypeAnalyzer implements IAnalyzer {
         const promises = this.fileNames.map(async (fileName) => await this.getSourceAndTraverse(syntaxKind, fileName));
 
         const settled = await Promise.allSettled(promises);
-        let anyCount = 0;
-        const details = settled.map((settledPromise) => this.processResults(settledPromise, anyCount));
-
-        return {
-            count: anyCount,
-            details: details,
-        };
+        return this.processResults(settled);
     }
 
     private async getSourceAndTraverse(syntaxKind: SyntaxKind, fileName: string): Promise<AnlyzerFileResult> {
+        const filePath = join(this.mainPath, fileName);
         try {
-            const filePath = join(this.mainPath, fileName);
             const file = await readFile(filePath, "utf8");
             const ast = createSourceFile(fileName, file, ScriptTarget.ES2018, true);
             const response = new Array<string>();
@@ -69,6 +64,7 @@ export class TypeAnalyzer implements IAnalyzer {
         } catch (error) {
             return {
                 success: false,
+                filePath: filePath,
                 error: error,
             };
         }
@@ -76,20 +72,43 @@ export class TypeAnalyzer implements IAnalyzer {
 
     private traverseAst(syntaxKind: SyntaxKind, node: Node, response: Array<string>): void {
         if (node.kind === syntaxKind) {
-            response.push(node.getText());
+            response.push(node.parent.getText());
+        }
+        node.forEachChild((childNode) => this.traverseAst(syntaxKind, childNode, response))
+    }
+
+    private processResults(settledPromises: Array<PromiseSettledResult<AnlyzerFileResult>>): AnalyzerResult {
+        let count = 0;
+        
+        const response = new Array<AnlyzerFileResult>();
+        
+        for (const settledPromise of settledPromises) {
+            const processedResult = this.processResult(settledPromise);
+            if (processedResult.success === false) {
+                response.push(processedResult)
+                continue;
+            }
+
+            if (processedResult.anyReferences.length === 0) {
+                continue;
+            }
+
+            count += processedResult.anyReferences.length
+            response.push(processedResult)
+        }
+
+        return {
+            count: count,
+            details: response
         }
     }
 
-    private processResults(settledPromise: PromiseSettledResult<AnlyzerFileResult>, anyCount: number): AnlyzerFileResult {
+    private processResult(settledPromise: PromiseSettledResult<AnlyzerFileResult>): AnlyzerFileResult {
         if (settledPromise.status === "rejected") {
             // exceptional case -- everything should be caught
             console.log(settledPromise);
             throw new Error("Unknown error while processing");
         }
-        const response = settledPromise.value;
-        if (response.success) {
-            anyCount += response.anyReferences.length;
-        }
-        return response;
+        return settledPromise.value;
     }
 }
