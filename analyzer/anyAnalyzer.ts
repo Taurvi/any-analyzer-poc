@@ -10,7 +10,7 @@ import { TypeAnalyzer } from "./type/TypeAnalyzer";
     const response = await analyzer.analyze(query);
 
     console.log("Search complete.");
-    console.log(`  Found ${queryName} in ${response.details.length} files.`);
+    console.log(`  Found ${queryName} ${response.count} times in ${response.details.length} files.`);
 
     for (const details of response.details) {
         console.log(`    ${details.filePath}`);
@@ -19,7 +19,7 @@ import { TypeAnalyzer } from "./type/TypeAnalyzer";
             console.log(`      - Erorr processing file: ${details.error}`);
             continue;
         }
-        
+
         for (const anyReference of details.anyReferences) {
             console.log(`      - ${anyReference}`);
         }

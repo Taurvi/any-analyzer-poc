@@ -74,18 +74,18 @@ export class TypeAnalyzer implements IAnalyzer {
         if (node.kind === syntaxKind) {
             response.push(node.parent.getText());
         }
-        node.forEachChild((childNode) => this.traverseAst(syntaxKind, childNode, response))
+        node.forEachChild((childNode) => this.traverseAst(syntaxKind, childNode, response));
     }
 
     private processResults(settledPromises: Array<PromiseSettledResult<AnlyzerFileResult>>): AnalyzerResult {
         let count = 0;
-        
+
         const response = new Array<AnlyzerFileResult>();
-        
+
         for (const settledPromise of settledPromises) {
             const processedResult = this.processResult(settledPromise);
             if (processedResult.success === false) {
-                response.push(processedResult)
+                response.push(processedResult);
                 continue;
             }
 
@@ -93,14 +93,14 @@ export class TypeAnalyzer implements IAnalyzer {
                 continue;
             }
 
-            count += processedResult.anyReferences.length
-            response.push(processedResult)
+            count += processedResult.anyReferences.length;
+            response.push(processedResult);
         }
 
         return {
             count: count,
-            details: response
-        }
+            details: response,
+        };
     }
 
     private processResult(settledPromise: PromiseSettledResult<AnlyzerFileResult>): AnlyzerFileResult {

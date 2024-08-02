@@ -9,5 +9,4 @@ export class BasicCalculator implements ICalculator {
     public subtract(firstNumber: any, secondNumber: any): number {
         return (firstNumber - secondNumber) as any;
     }
-
 }

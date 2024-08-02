@@ -16,7 +16,7 @@ npm run analyze
 
 Searching code for AnyKeyword
 Search complete.
-  Found AnyKeyword in 2 files.
+  Found AnyKeyword 10 times in 2 files.
     /Volumes/local-workspace/THAT Conference/ts-compiler/src/clients/calculator/ICalculator.ts
       - firstNumber: any
       - secondNumber: any
