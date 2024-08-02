@@ -1,0 +1,26 @@
+{
+    "name": "ts-compiler-poc",
+    "version": "1.0.0",
+    "main": "index.ts",
+    "scripts": {
+        "build": "tsc",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "format:write": "npx prettier --write .",
+        "analyze": "node --import=tsimp/import analyzer/anyAnalyzer.ts"
+    },
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "devDependencies": {
+        "@babel/core": "^7.25.2",
+        "@babel/node": "^7.25.0",
+        "@babel/preset-env": "^7.25.3",
+        "@babel/preset-typescript": "^7.24.7",
+        "@tsconfig/node20": "^20.1.4",
+        "@types/node": "^22.0.2",
+        "glob": "^11.0.0",
+        "prettier": "^3.3.3",
+        "tsimp": "^2.0.11",
+        "typescript": "^5.5.4"
+    }
+}
